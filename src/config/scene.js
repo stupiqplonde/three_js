@@ -1,8 +1,8 @@
 export const SCENE_CONFIG = {
-    background: 0x1E1036,
+    background: 0x000000,
     fog: {
-        enable: true,
-        color: 0x1E1036,
-        density: 0.3
+        enable: false,
+        color: 0x000000,
+        density: 0.02
     }
-}
+};

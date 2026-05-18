@@ -1,7 +1,21 @@
+import { SYNTHWAVE_CONFIG } from './synthwave.js';
+
 export const CAMERA_CONFIG = {
-    fov: 45,
+    fov: 60,
     near: 0.1,
-    far: 1000,
-    position: {x: 5, y: 8, z: 5},
-    target: { x: 0, y: 0, z: 0}
-}
+    far: 500,
+    position: { ...SYNTHWAVE_CONFIG.camera.zoom.from },
+    target: { ...SYNTHWAVE_CONFIG.camera.lookAt },
+
+    controls: {
+        enableDamping: true,
+        dampingFactor: 0.08,
+        autoRotate: false,
+        enableZoom: true,
+        enablePan: false,
+        enableRotate: true,
+        rotateSpeed: 0.6
+    },
+
+    zoom: SYNTHWAVE_CONFIG.camera.zoom
+};

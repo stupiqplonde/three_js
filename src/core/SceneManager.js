@@ -18,6 +18,7 @@ export class SceneManager {
         }
 
         return this.scene;
+
     }
 
     getScene() {
