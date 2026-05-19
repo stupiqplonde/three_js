@@ -1,32 +1,36 @@
-import * as THREE from "three";
-import { LIGHTS_CONFIG } from "../config/light.js";
+import * as THREE from 'three';
+import {LIGHTS_CONFIG} from "../config/light.js";
 
 export class LightManager {
     constructor(scene) {
         this.scene = scene;
         this.lights = {};
     }
-
-    create() {
+    
+    createAll(){
         this._createMainLight();
-        this._createAmbientLight();
         return this.lights;
     }
-
-    _createMainLight() {
-        const config = LIGHTS_CONFIG.main;
-        const light = new THREE.DirectionalLight(config.color, config.intensity);
+    
+    _createMainLight(){
+        const config = LIGHTS_CONFIG.main
+        const light = 
+            new THREE.DirectionalLight(config.color, config.intensity);
         light.position.set(config.position.x, config.position.y, config.position.z);
-        light.castShadow = config.castShadow;
-        light.shadow.mapSize.set(config.shadowMapSize, config.shadowMapSize);
+        
+        if(config.castShadow){
+            light.castShadow = true;
+            // light.shadow.MapSize.with = config.shadowMapSize;
+            // light.shadow.MapSize.height = config.shadowMapSize;
+            
+            light.shadow.camera.near = 0.5;
+            light.shadow.camera.far = 20;
+        }
         this.scene.add(light);
         this.lights.main = light;
     }
-
-    _createAmbientLight() {
-        const config = LIGHTS_CONFIG.ambient;
-        const light = new THREE.AmbientLight(config.color, config.intensity);
-        this.scene.add(light);
-        this.lights.ambient = light;
+    
+    getLight(name){
+        return this.lights[name];
     }
 }

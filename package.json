@@ -1,0 +1,24 @@
+{
+  "name": "three_js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "example.js",
+  "scripts": {
+    "start": "npx --yes serve . -p 3000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stupiqplonde/Three_JS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stupiqplonde/Three_JS/issues"
+  },
+  "homepage": "https://github.com/stupiqplonde/Three_JS#readme",
+  "dependencies": {
+    "three": "^0.184.0"
+  }
+}

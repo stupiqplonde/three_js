@@ -1,25 +1,37 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 import { SceneManager } from "./core/SceneManager.js";
 import { CameraManager } from "./core/CameraManager.js";
 import { LightManager } from "./core/LightManager.js";
+import { ShipGenerator } from "./utils/shipGenerator.js"
+import { Set } from './utils/set.js';
+import { SkySettings } from './utils/skySet.js';
+import { ModelLoader } from './core/ModelLoader.js';
 
-class Main {
-    constructor() {
+
+class Main{
+    constructor(){
         this.sceneManager = null;
         this.cameraManager = null;
         this.lightManager = null;
+        this.settings = null;
         this.renderer = null;
-        this.cube = null;
-
+        this.camera = null;
+        
         this.time = 0;
-        this.init();
+        this.cube = null;
+        this.modelLoader = null;
+        this.skySettings = null;
+        // Для будущего вызова класса делающего корабль
+        this.shipGenerator = null;
+        
+        this.init()
     }
-
-    init() {
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    
+    init(){
+        this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(this.renderer.domElement);
 
         this.sceneManager = new SceneManager();
@@ -27,40 +39,49 @@ class Main {
 
         this.cameraManager = new CameraManager(this.renderer.domElement);
         this.cameraManager.create();
+        this.cameraManager.createControls();
+        
 
         this.lightManager = new LightManager(scene);
-        this.lightManager.create();
+        this.lightManager.createAll();
 
-        const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-        const material = new THREE.MeshStandardMaterial({ color: 0x66aaff });
-        this.cube = new THREE.Mesh(geometry, material);
-        this.cube.castShadow = true;
-        scene.add(this.cube);
+        this.settings = new Set(scene);
+        this.settings.createAllHelpers();
+        this.cube = this.settings.createAllMeshes();
 
-        window.addEventListener("resize", () => this.onResize());
+        this.skySettings = new SkySettings(scene);
+        this.skySettings.createStars();
+       
+        this.shipGenerator = new ShipGenerator(scene);
+        this.shipGenerator.createShip('scout');
+
+        this.modelLoader = new ModelLoader(scene);
+        this.modelLoader.load(0);
+        this.modelLoader.load(0);
+        this.modelLoader.load(0);
+
+        
+        window.addEventListener('resize', () => this.onWindowResize());
 
         this.animate();
     }
-
-    animate() {
+    
+    onWindowResize(){
+        this.cameraManager.onWindowResize();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    
+    animate(){
         requestAnimationFrame(() => this.animate());
         this.time += 0.016;
-
-        if (this.cube) {
-            this.cube.rotation.y += 0.01;
-            this.cube.rotation.x += 0.005;
-        }
-
+        
+        this.cameraManager.update();
+        
         this.renderer.render(
             this.sceneManager.getScene(),
             this.cameraManager.getCamera()
-        );
-    }
-
-    onResize() {
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.cameraManager.handleResize();
+        )
     }
 }
 
-new Main();
+const game = new Main();
