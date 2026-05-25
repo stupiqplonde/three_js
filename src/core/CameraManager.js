@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
+import { FlyControls } from 'three/addons/controls/FlyControls.js';
 import {CAMERA_CONFIG} from "../config/camera.js";
 
 export class CameraManager {
@@ -30,8 +31,9 @@ export class CameraManager {
         return this.camera
     }
     
-    createControls(){  //setter
+    createOrbitControls(){  //setter
         this.controls = new OrbitControls(this.camera, this.renderDomElement);
+
         this.controls.enablePan = CAMERA_CONFIG.controls.enablePan;
         this.controls.enableDamping = CAMERA_CONFIG.controls.enableDamping;
         this.controls.enableZoom = CAMERA_CONFIG.controls.enableZoom;
@@ -48,15 +50,27 @@ export class CameraManager {
         
         return this.controls;
     }
+
+    createFlyControls(){
+        this.controls = new FlyControls(this.camera, this.renderDomElement);
+
+        this.controls.target.set(
+            CAMERA_CONFIG.target.x,
+            CAMERA_CONFIG.target.y,
+            CAMERA_CONFIG.target.z
+        );
+
+        return this.controls;
+    }
     
     onWindowResize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
     }
     
-    update(){
+    update(delta = 0){
         if(this.controls){
-            this.controls.update();
+            this.controls.update(delta);
         }
     }
     getCamera() {

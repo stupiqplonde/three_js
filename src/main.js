@@ -19,7 +19,7 @@ class Main{
         this.camera = null;
         
         this.time = 0;
-        this.cube = null;
+        this.model = null;
 
         this.paneConstructor = null;
 
@@ -27,6 +27,7 @@ class Main{
         this.skySettings = null;
         // Для будущего вызова класса делающего корабль
         this.shipGenerator = null;
+        this.clock = null;
         
         this.init()
     }
@@ -43,7 +44,7 @@ class Main{
 
         this.cameraManager = new CameraManager(this.renderer.domElement);
         this.cameraManager.create();
-        this.cameraManager.createControls();
+        this.cameraManager.createOrbitControls();
         
 
         this.lightManager = new LightManager(scene);
@@ -57,14 +58,22 @@ class Main{
         this.skySettings.createStars();
        
         this.shipGenerator = new ShipGenerator(scene);
-        this.shipGenerator.createShip('scout');
-
-
+        //this.shipGenerator.createShip('scout');
+        
         this.modelLoader = new ModelLoader(scene);
         this.modelLoader.load(0);
+        // this.model = this.modelLoader.model
+        console.log(scene.children[3])
+
+        this.clock = THREE.clock();
 
         this.paneConstructor = new PaneConstructor(scene);
-        this.paneConstructor.addAllPanels();
+
+        setTimeout(() => {
+            this.model = this.modelLoader.model
+            this.paneConstructor.addAllPanels(this.model);},
+        500);
+        
 
         
         window.addEventListener('resize', () => this.onWindowResize());
@@ -80,8 +89,14 @@ class Main{
     animate(){
         requestAnimationFrame(() => this.animate());
         this.time += 0.016;
+        const delta = this.clock.getDelta();
         
-        this.cameraManager.update();
+        this.cameraManager.update(delta);
+
+        if(this.model){
+            this.model.rotation.y += 0.01
+            this.model.rotation.z += 0.01
+        }
         
         this.renderer.render(
             this.sceneManager.getScene(),

@@ -7,29 +7,28 @@ export class PaneConstructor{
         this.scene = scene;
     }
 
-    addAllPanels(){
-        this.addPositionPane();
+    createFolder(name){
+        const folder = this.pane.addFolder({
+            title: `${name}`,
+            expanded: false,
+        });
+        return folder;
     }
 
-    addPositionPane(){
-        const geometry = new THREE.ConeGeometry( 5, 20, 32 );
-        const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-        const cone = new THREE.Mesh(geometry, material );
-        this.scene.add( cone );
-        this.pane.addBinding(cone.position, 'x', {
-            min: -5,
-            max: 5,
-            step: 0.1
-        })
-        this.pane.addBinding(cone.position, 'y', {
-            min: -10,
-            max: 10,
-            step: 0.1
-        })
-        this.pane.addBinding(cone.position, 'z', {
-            min: -5,
-            max: 5,
-            step: 0.1
-        })
+    addAllPanels(obj){
+        this.addPositionPane(obj, this.createFolder(`${obj.name} position`));
+        this.addRotationPane(obj, this.createFolder(`${obj.name} position`))
+    }
+
+    addPositionPane(obj, folder){
+        folder.addBinding(obj.position, 'x', {min: -10, max: 10, step: 0.01, label: 'POS X'})
+        folder.addBinding(obj.position, 'y', {min: -10, max: 10, step: 0.01, label: 'POS Y'})
+        folder.addBinding(obj.position, 'z', {min: -10, max: 10, step: 0.01, label: 'POS Z'})
+    }
+
+    addRotationPane(obj, folder){
+        folder.addBinding(obj.rotation, 'x', {min: -180, max: 180, step: 0.01, label: 'ROT X'})
+        folder.addBinding(obj.rotation, 'y', {min: -10, max: 10, step: 0.01, label: 'ROT Y'})
+        folder.addBinding(obj.rotation, 'z', {min: -10, max: 10, step: 0.01, label: 'ROT Z'})
     }
 }
