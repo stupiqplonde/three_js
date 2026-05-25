@@ -1,23 +1,16 @@
 {
-  "name": "three_js",
-  "version": "1.0.0",
-  "description": "",
-  "main": "example.js",
+  "name": "vite-project",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "npx --yes serve . -p 3000",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stupiqplonde/Three_JS.git"
+  "devDependencies": {
+    "vite": "^8.0.12"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/stupiqplonde/Three_JS/issues"
-  },
-  "homepage": "https://github.com/stupiqplonde/Three_JS#readme",
   "dependencies": {
     "three": "^0.184.0"
   }

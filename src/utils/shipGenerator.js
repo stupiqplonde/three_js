@@ -19,7 +19,7 @@ export class ShipGenerator{ // нужно экспортировать для в
         this.ship = new THREE.Group(); 
 
         if(type_ship === type_scout){
-            this.ship.scale.set(new THREE.Vector3(type_scout.width, 1, type_scout.height));
+            this.ship.scale.set(type_scout.width, 1, type_scout.height);
             console.log(this.ship)
         }
 

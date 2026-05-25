@@ -13,7 +13,8 @@ export class SkySettings{
         const geometry = new THREE.BufferGeometry();
         const vertices = [];
 
-        const sprite = new THREE.TextureLoader().load( '../../textures/sprites/disc.png' );
+        const spriteUrl = new URL('../../textures/sprites/disc.png', import.meta.url).href;
+        const sprite = new THREE.TextureLoader().load(spriteUrl);
         sprite.colorSpace = THREE.SRGBColorSpace;
 
         for ( let i = 0; i < 10000; i ++ ) {
@@ -29,7 +30,7 @@ export class SkySettings{
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
         const material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: true, map: sprite, alphaTest: 0.5, transparent: true } );
-        material.color.setHSL( 250, 250, 250, THREE.SRGBColorSpace );
+        material.color.setHSL( 0.6, 0.2, 0.95 );
 
         const particles = new THREE.Points( geometry, material );
         this.scene.add( particles );

@@ -1,8 +1,8 @@
 export const SHIP_CONFIG = {
     type: {
-        'scout' : { 
-            wight: 3,
+        scout: {
+            width: 3,
             height: 3,
-        }
-    }
-}
+        },
+    },
+};

@@ -1,5 +1,5 @@
 export const MODELS_CONFIG = {
-    url : [
-        '../../models/scout.glb'
-    ]
-}
+    url: [
+        new URL('../../models/scout.glb', import.meta.url).href,
+    ],
+};

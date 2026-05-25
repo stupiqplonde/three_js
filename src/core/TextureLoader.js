@@ -1,24 +1,26 @@
 import * as THREE from 'three';
-import { TEXTURES_CONFIG } from '../config/texture.js';
-import { texture } from 'three/tsl';
+import { TEXTURES_CONFIG, getTextureUrl } from '../config/texture.js';
 
 export class TextureLoader {
-    constructor(){
+    constructor() {
         this.texture_loader = new THREE.TextureLoader();
     }
 
-    load (url_name) {
-        const url = TEXTURES_CONFIG.url.grass.albedo;
-        const texture = this.texture_loader.load(
-            url, 
-            (texture) => {
-                texture.colorSpace = THREE.SRGBColorSpace;     
-        });
-        return texture;
+    load(materialKey) {
+        const maps = TEXTURES_CONFIG.url[materialKey];
+        if (!maps) return {};
+
+        const textures = {};
+        for (const mapKey of Object.keys(maps)) {
+            const texture = this.loadMap(mapKey, materialKey);
+            if (texture) textures[mapKey] = texture;
+        }
+        return textures;
     }
 
-    load_maps( url_name ){
-        const url_ao = TEXTURES_CONFIG.url.grass.ao;
+    loadMap(mapKey, materialKey) {
+        const url = getTextureUrl(materialKey, mapKey);
+        if (!url) return null;
+        return this.texture_loader.load(url);
     }
-    
 }
