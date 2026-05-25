@@ -6,6 +6,7 @@ import { ShipGenerator } from "./utils/shipGenerator.js"
 import { Set } from './utils/set.js';
 import { SkySettings } from './utils/skySet.js';
 import { ModelLoader } from './core/ModelLoader.js';
+import { PaneConstructor } from "./utils/PaneConstructor.js"
 
 
 class Main{
@@ -19,6 +20,9 @@ class Main{
         
         this.time = 0;
         this.cube = null;
+
+        this.paneConstructor = null;
+
         this.modelLoader = null;
         this.skySettings = null;
         // Для будущего вызова класса делающего корабль
@@ -55,10 +59,12 @@ class Main{
         this.shipGenerator = new ShipGenerator(scene);
         this.shipGenerator.createShip('scout');
 
+
         this.modelLoader = new ModelLoader(scene);
         this.modelLoader.load(0);
-        this.modelLoader.load(0);
-        this.modelLoader.load(0);
+
+        this.paneConstructor = new PaneConstructor(scene);
+        this.paneConstructor.addAllPanels();
 
         
         window.addEventListener('resize', () => this.onWindowResize());
