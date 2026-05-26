@@ -54,11 +54,10 @@ export class CameraManager {
     createFlyControls(){
         this.controls = new FlyControls(this.camera, this.renderDomElement);
 
-        this.controls.target.set(
-            CAMERA_CONFIG.target.x,
-            CAMERA_CONFIG.target.y,
-            CAMERA_CONFIG.target.z
-        );
+        this.controls.movementSpeed = 20;
+        this.controls.rollSpeed = Math.PI / 6;
+        this.controls.autoForward = false;
+        this.controls.dragToLook = false;
 
         return this.controls;
     }

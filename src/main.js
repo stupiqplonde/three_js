@@ -2,37 +2,42 @@ import * as THREE from 'three';
 import { SceneManager } from "./core/SceneManager.js";
 import { CameraManager } from "./core/CameraManager.js";
 import { LightManager } from "./core/LightManager.js";
-import { ShipGenerator } from "./utils/shipGenerator.js"
+import { ShipGenerator } from "./utils/shipGenerator.js";
 import { Set } from './utils/set.js';
 import { SkySettings } from './utils/skySet.js';
 import { ModelLoader } from './core/ModelLoader.js';
-import { PaneConstructor } from "./utils/PaneConstructor.js"
+import { PaneConstructor } from "./utils/PaneConstructor.js";
 
+const NEAR_DISTANCE = 1;
+const ASTEROID_SPEED = 4;
+const SHIP_SPEED = 3;
 
-class Main{
-    constructor(){
+class Main {
+    constructor() {
         this.sceneManager = null;
         this.cameraManager = null;
         this.lightManager = null;
         this.settings = null;
         this.renderer = null;
-        this.camera = null;
-        
-        this.time = 0;
-        this.model = null;
 
         this.paneConstructor = null;
-
         this.modelLoader = null;
         this.skySettings = null;
-        // Для будущего вызова класса делающего корабль
         this.shipGenerator = null;
         this.clock = null;
-        
-        this.init()
+
+        this.ship = null;
+        this.asteroid = null;
+        this.shipVelocity = new THREE.Vector3();
+        this.asteroidVelocity = new THREE.Vector3();
+        this._direction = new THREE.Vector3();
+        this._deflectOffset = new THREE.Vector3(0, 1.5, 0.3);
+        this.wasNear = false;
+
+        this.init();
     }
-    
-    init(){
+
+    init() {
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
@@ -45,7 +50,6 @@ class Main{
         this.cameraManager = new CameraManager(this.renderer.domElement);
         this.cameraManager.create();
         this.cameraManager.createOrbitControls();
-        
 
         this.lightManager = new LightManager(scene);
         this.lightManager.createAll();
@@ -56,52 +60,108 @@ class Main{
 
         this.skySettings = new SkySettings(scene);
         this.skySettings.createStars();
-       
+
         this.shipGenerator = new ShipGenerator(scene);
-        //this.shipGenerator.createShip('scout');
-        
-        this.modelLoader = new ModelLoader(scene);
-        this.modelLoader.load(0);
-        // this.model = this.modelLoader.model
-        console.log(scene.children[3])
 
-        this.clock = THREE.clock();
-
+        this.clock = new THREE.Clock();
         this.paneConstructor = new PaneConstructor(scene);
 
-        setTimeout(() => {
-            this.model = this.modelLoader.model
-            this.paneConstructor.addAllPanels(this.model);},
-        500);
-        
+        this.modelLoader = new ModelLoader(scene);
 
-        
+        this.modelLoader.load(0, { position: { x: -8, y: 0, z: 0 } }).then((model) => {
+            this.ship = model;
+            this.ship.name = 'ship';
+            this.shipVelocity.set(SHIP_SPEED, 0, 0);
+            this.paneConstructor.addAllPanels(this.ship);
+        });
+
+        this.modelLoader.load(1, { position: { x: 8, y: 0, z: 0 } }).then((model) => {
+            this.asteroid = model;
+            this.asteroid.name = 'asteroid';
+            this.aimAsteroidAtShip();
+            this.paneConstructor.addAllPanels(this.asteroid);
+        });
+
         window.addEventListener('resize', () => this.onWindowResize());
-
         this.animate();
     }
-    
-    onWindowResize(){
+
+    /** Направление полёта астероида — к кораблю (как преследование в аркадах). */
+    aimAsteroidAtShip() {
+        if (!this.ship || !this.asteroid) return;
+
+        this._direction
+            .subVectors(this.ship.position, this.asteroid.position)
+            .normalize()
+            .multiplyScalar(ASTEROID_SPEED);
+
+        this.asteroidVelocity.copy(this._direction);
+    }
+
+    /**
+     * Простой «космический» отскок при сближении:
+     * астероид уходит в сторону от корабля, корабль теряет скорость.
+     */
+    onNearMiss() {
+        this._direction
+            .subVectors(this.asteroid.position, this.ship.position);
+
+        if (this._direction.lengthSq() < 0.0001) {
+            this._direction.set(0, 1, 0);
+        } else {
+            this._direction.normalize();
+        }
+
+        // Новая траектория: от корабля + лёгкий увод вверх (не прямо назад)
+        this.asteroidVelocity
+            .copy(this._direction)
+            .multiplyScalar(ASTEROID_SPEED)
+            .add(this._deflectOffset);
+
+        // Удар по скорости корабля (как торможение / drag)
+        this.shipVelocity.multiplyScalar(0.5);
+    }
+
+    updateMovement(delta) {
+        if (this.ship) {
+            this.ship.position.addScaledVector(this.shipVelocity, delta);
+        }
+        if (this.asteroid) {
+            this.asteroid.position.addScaledVector(this.asteroidVelocity, delta);
+        }
+    }
+
+    checkNearMiss() {
+        const distance = this.ship.position.distanceTo(this.asteroid.position);
+        const isNear = distance < NEAR_DISTANCE;
+
+        if (isNear && !this.wasNear) {
+            this.onNearMiss();
+        }
+
+        this.wasNear = isNear;
+    }
+
+    onWindowResize() {
         this.cameraManager.onWindowResize();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
-    
-    animate(){
-        requestAnimationFrame(() => this.animate());
-        this.time += 0.016;
-        const delta = this.clock.getDelta();
-        
-        this.cameraManager.update(delta);
 
-        if(this.model){
-            this.model.rotation.y += 0.01
-            this.model.rotation.z += 0.01
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        const delta = this.clock.getDelta();
+
+        this.cameraManager.update(delta);
+        this.updateMovement(delta);
+
+        if (this.asteroid && this.ship) {
+            this.checkNearMiss();
         }
-        
+
         this.renderer.render(
             this.sceneManager.getScene(),
             this.cameraManager.getCamera()
-        )
+        );
     }
 }
 
