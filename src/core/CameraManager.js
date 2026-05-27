@@ -54,7 +54,7 @@ export class CameraManager {
     createFlyControls(){
         this.controls = new FlyControls(this.camera, this.renderDomElement);
 
-        this.controls.movementSpeed = 20;
+        this.controls.movementSpeed = 15;
         this.controls.rollSpeed = Math.PI / 6;
         this.controls.autoForward = false;
         this.controls.dragToLook = false;
