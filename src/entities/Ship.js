@@ -9,9 +9,7 @@ export class Ship{
         this.init();
     }
 
-    init(){
-        console.log(this.scene);
-
+    init() {
     }
 
     move(){

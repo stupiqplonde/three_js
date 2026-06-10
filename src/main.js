@@ -6,7 +6,6 @@ import { ShipGenerator } from "./utils/shipGenerator.js";
 import { Set } from './utils/set.js';
 import { SkySettings } from './utils/skySet.js';
 import { ModelLoader } from './core/ModelLoader.js';
-import { PaneConstructor } from "./utils/PaneConstructor.js";
 import { Ship } from './entities/Ship.js';
 
 const NEAR_DISTANCE = 1;
@@ -21,11 +20,10 @@ class Main {
         this.settings = null;
         this.renderer = null;
 
-        this.paneConstructor = null;
         this.modelLoader = null;
         this.skySettings = null;
         this.shipGenerator = null;
-        this.clock = null;
+        this.timer = null;
 
         this.ship = null;
         this.asteroid = null;
@@ -65,8 +63,8 @@ class Main {
 
         this.shipGenerator = new ShipGenerator(scene);
 
-        this.clock = new THREE.Clock();
-        this.paneConstructor = new PaneConstructor(scene);
+        this.timer = new THREE.Timer();
+        this.timer.connect(document);
 
         this.modelLoader = new ModelLoader(scene);
 
@@ -74,14 +72,12 @@ class Main {
             this.ship = model;
             this.ship.name = 'ship';
             this.shipVelocity.set(SHIP_SPEED, 0, 0);
-            this.paneConstructor.addAllPanels(this.ship);
         });
 
         this.modelLoader.load(1, { position: { x: 8, y: 0, z: 0 } }).then((model) => {
             this.asteroid = model;
             this.asteroid.name = 'asteroid';
             // this.aimAsteroidAtShip();
-            this.paneConstructor.addAllPanels(this.asteroid);
         });
 
         window.addEventListener('resize', () => this.onWindowResize());
@@ -90,70 +86,16 @@ class Main {
         this.cruiser = new Ship(scene)
     }
 
-    // /** Направление полёта астероида — к кораблю (как преследование в аркадах). */
-    // aimAsteroidAtShip() {
-    //     if (!this.ship || !this.asteroid) return;
-
-    //     this._direction
-    //         .subVectors(this.ship.position, this.asteroid.position)
-    //         .normalize()
-    //         .multiplyScalar(ASTEROID_SPEED);
-
-    //     this.asteroidVelocity.copy(this._direction);
-    // }
-
-    // /**
-    //  * Простой «космический» отскок при сближении:
-    //  * астероид уходит в сторону от корабля, корабль теряет скорость.
-    //  */
-    // onNearMiss() {
-    //     this._direction
-    //         .subVectors(this.asteroid.position, this.ship.position);
-
-    //     if (this._direction.lengthSq() < 0.0001) {
-    //         this._direction.set(0, 1, 0);
-    //     } else {
-    //         this._direction.normalize();
-    //     }
-
-    //     // Новая траектория: от корабля + лёгкий увод вверх (не прямо назад)
-    //     this.asteroidVelocity
-    //         .copy(this._direction)
-    //         .multiplyScalar(ASTEROID_SPEED)
-    //         .add(this._deflectOffset);
-
-    //     // Удар по скорости корабля (как торможение / drag)
-    //     this.shipVelocity.multiplyScalar(0.5);
-    // }
-
-    // updateMovement(delta) {
-    //     if (this.ship) {
-    //         this.ship.position.addScaledVector(this.shipVelocity, delta);
-    //     }
-    //     if (this.asteroid) {
-    //         this.asteroid.position.addScaledVector(this.asteroidVelocity, delta);
-    //     }
-    // }
-
-    // checkNearMiss() {
-    //     const distance = this.ship.position.distanceTo(this.asteroid.position);
-    //     const isNear = distance < NEAR_DISTANCE;
-
-    //     if (isNear && !this.wasNear) {
-    //         this.onNearMiss();
-    //     }
-
-    //     this.wasNear = isNear;
-    // }
 
     onWindowResize() {
         this.cameraManager.onWindowResize();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    animate() {
-        requestAnimationFrame(() => this.animate());
-        const delta = this.clock.getDelta();
+    animate(timestamp) {
+        requestAnimationFrame((t) => this.animate(t));
+        this.timer.update(timestamp);
+        const delta = this.timer.getDelta();
 
         this.cameraManager.update(delta);
 
