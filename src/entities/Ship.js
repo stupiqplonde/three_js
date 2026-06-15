@@ -8,11 +8,12 @@ export class Ship{
 
         this.init();
     }
-
-    init() {
+    
+    init(){
+        console.log(this.scene);
     }
 
-    move(){
-
+    move(delta){
+        //> логика из main/animate
     }
 }

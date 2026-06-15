@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+﻿import * as THREE from 'three';
 import {LIGHTS_CONFIG} from "../config/light.js";
 
 export class LightManager {
@@ -9,6 +9,7 @@ export class LightManager {
     
     createAll(){
         this._createMainLight();
+        this._createAmbientLight();
         return this.lights;
     }
     
@@ -20,14 +21,30 @@ export class LightManager {
         
         if(config.castShadow){
             light.castShadow = true;
-            // light.shadow.MapSize.with = config.shadowMapSize;
-            // light.shadow.MapSize.height = config.shadowMapSize;
+            light.shadow.mapSize.with = config.shadowMapSize;
+            light.shadow.mapSize.height = config.shadowMapSize;
             
             light.shadow.camera.near = 0.5;
             light.shadow.camera.far = 20;
         }
         this.scene.add(light);
         this.lights.main = light;
+
+        const helper = new THREE.DirectionalLightHelper( light, 5 );
+        this.scene.add( helper );
+
+    }
+
+    _createAmbientLight(){
+        const light = new THREE.AmbientLight( 'yellow' ); // soft white light
+        light.position.x = -3;
+        light.position.y = 3;
+        light.intensity = 0.5;
+
+        this.scene.add( light );
+        this.lights.ambient = light;
+        console.log(light);
+
     }
     
     getLight(name){

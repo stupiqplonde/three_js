@@ -1,26 +1,20 @@
-export const TEXTURES_CONFIG = {
+﻿export const TEXTURES_CONFIG = {
     url: {
-        grass: {
-            albedo: '../../textures/grass/wispy-grass-meadow_albedo.png',
-            ao: '../../textures/grass/wispy-grass-meadow_ao.png',
-            metallic: '../../textures/grass/wispy-grass-meadow_metallic.png',
-            roughness: '../../textures/grass/wispy-grass-meadow_roughness.png',
-            normal: '../../textures/grass/wispy-grass-meadow_normal-ogl.png',
-            height: '../../textures/grass/wispy-grass-meadow_height.png',
-        },
-        rock: {
-            albedo: '',
-            ao: '',
-            metallic: '',
-            roughness: '',
-            normal: '',
-            height: '',
-        },
-    },
-};
-
-export function getTextureUrl(materialKey, mapKey) {
-    const path = TEXTURES_CONFIG.url[materialKey]?.[mapKey];
-    if (!path) return null;
-    return new URL(path, import.meta.url).href;
+        'hex-armor': [
+            '../../textures/hex-armor/futuristic-hex-armor_albedo.png',
+            '../../textures/hex-armor/futuristic-hex-armor_ao.png',
+            '../../textures/hex-armor/futuristic-hex-armor_metallic.png',
+            '../../textures/hex-armor/futuristic-hex-armor_roughness.png',
+            '../../textures/hex-armor/futuristic-hex-armor_normal-ogl.png',
+            '../../textures/hex-armor/futuristic-hex-armor_height.png'
+        ],
+        'rock': [
+            '../../textures/rock/wet-mossy-rocks_albedo.png',
+            '../../textures/rock/wet-mossy-rocks_ao.png',
+            '../../textures/rock/wet-mossy-rocks_metallic.png',
+            '../../textures/rock/wet-mossy-rocks_roughness.png',
+            '../../textures/rock/wet-mossy-rocks_normal-ogl.png',
+            '../../textures/rock/wet-mossy-rocks_height.png'
+        ]
+    }
 }

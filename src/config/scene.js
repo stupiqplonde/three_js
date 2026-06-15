@@ -1,11 +1,11 @@
-export const SCENE_CONFIG = {
+﻿export const SCENE_CONFIG = {
     background: 0x1E1036,
     fog: {
         // activity
-        enable: false,
+        enable: true,
         // color scene
         color: 0x1E1036,
         // opacity scene back
-        density: 0.01
+        density: 0.003
     }
 }
