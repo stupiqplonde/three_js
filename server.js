@@ -3,7 +3,8 @@ import fastifyStatic from '@fastify/static';
 import {Server} from 'socket.io';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
-import {Player} from './src/entities/Ship.js'
+import {Ship} from './src/entities/Ship.js'
+import {dbManager} from './src/database/DatabaseManager.js'
 //___________ ищем папку в которой лежит файл сервера
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
